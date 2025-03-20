@@ -7,24 +7,21 @@
 </head>
 <body>
     <h1>This is home page</h1>
-    <input type="text" id="name" placeholder="msg......." />
+    <p id="show"></p>
+
+    <input type="text" id="msg">
     <button onclick="send()">Send</button>
 
 
 
     <script src="/socket.io/socket.io.js"></script>
-
     <script>
-        let socket = io();
+        const socket = new io();
         
         function send(){
-            let name = document.getElementById('name').value;
-            document.getElementById('name').value='';
-            
-            socket.emit('myEvent',name);
-            
+            const msg = document.getElementById('msg').value;
+            socket.emit('myevent',msg);
         }
-        
 
 
     </script>
