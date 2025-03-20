@@ -16,12 +16,16 @@
 
     <script src="/socket.io/socket.io.js"></script>
     <script>
-        const socket = new io();
+        const socket = new io('/sell');
         
-        function send(){
-            const msg = document.getElementById('msg').value;
-            socket.emit('myevent',msg);
-        }
+        // function send(){
+        //     const msg = document.getElementById('msg').value;
+        //     socket.emit('myevent',msg);
+        // }
+
+        socket.on('myevent',function(msg){
+            document.getElementById('show').innerHTML = msg
+        });
 
 
     </script>

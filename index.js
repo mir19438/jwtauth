@@ -5,36 +5,25 @@ const http = require("http");
 const expressServer = http.createServer(app);
 
 
-
-
 const { Server } = require("socket.io");
 const io = new Server(expressServer);
 
 
 
 io.on("connection", function (socket) {
-  console.log("New user connected");
-
-  socket.on('myEvent',function(msg){
-    console.log(msg);
+  
+  socket.on('chat',function(msg){
+    io.emit('chat_transfer',msg);
   });
 
-  socket.on('disconnect',function(){
-    console.log('user disconnected');
-  });
 
 });
 
 
 
 
-
-
-
-
-
 app.get("/", function (req, res) {
-  res.sendFile(__dirname + "/index.html");
+  res.sendFile(__dirname + "/chatapp.html");
 });
 
 expressServer.listen(3000, function () {

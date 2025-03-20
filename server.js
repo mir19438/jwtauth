@@ -1,41 +1,43 @@
 const express = require("express");
-const app = new express();
-
 const http = require("http");
-const expressServer = http.createServer(app);
-
 const { Server } = require("socket.io");
-const io = new Server(expressServer);
+const cors = require("cors");
 
-io.on("connection", function (socket) {
-  console.log("New user connected");
+const app = express();
+const server = http.createServer(app);
+const io = new Server(server, {
+  cors: {
+    origin: "*",
+  },
+});
 
-    socket.on('myevent',function(msg){
-        console.log(msg);
-    });
+// Middleware
+app.use(express.json());
+app.use(cors());
 
+// Socket.io Connection
+io.on("connection", (socket) => {
+  console.log("একজন ইউজার সংযুক্ত হয়েছে:", socket.id);
 
-  //   setTimeout(() => {
-  //     let d = new Date();
-  //     let t = d.getTime();
-  //     socket.send(t + " " + "server to client");
-  //   }, 10000);
+  socket.on("sendMessage", (data) => {
+    console.log("ক্লায়েন্ট থেকে ডাটা এসেছে:", data);
+    socket.emit("receiveMessage", { message: "Server থেকে রিপ্লাই!", data });
+  });
 
-//   setInterval(() => {
-//     let d = new Date();
-//     let t = d.getTime();
-//     socket.emit('myevent',t + " " + "server to client");
-//   }, 10);
-
-  socket.on("disconnect", function () {
-    console.log("User disconnected");
+  socket.on("disconnect", () => {
+    console.log("একজন ইউজার সংযোগ বিচ্ছিন্ন করেছে");
   });
 });
 
-app.get("/", function (req, res) {
-  res.sendFile(__dirname + "/client.html");
+// API Route
+app.get("/send-data", (req, res) => {
+  const { message } = req.body;
+  io.emit("receiveMessage", { message });
+  res.json({ status: "success", message: "Message sent to all clients" });
 });
 
-expressServer.listen(3000, function () {
-  console.log("Server is http://localhost:3000");
+// Server Run
+const PORT = 3000;
+server.listen(PORT, () => {
+  console.log(`Server চলছে: http://localhost:${PORT}`);
 });
